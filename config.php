@@ -6,7 +6,7 @@
 define('SUPABASE_URL', 'https://YOUR_PROJECT.supabase.co');
 define('SUPABASE_ANON_KEY', 'YOUR_ANON_KEY');
 define('SUPABASE_SERVICE_KEY', 'YOUR_SERVICE_ROLE_KEY'); // admin ops-д
-define('ANTHROPIC_API_KEY', 'YOUR_ANTHROPIC_API_KEY');
+define('OPENAI_API_KEY', 'YOUR_ANTHROPIC_API_KEY');
 define('SITE_NAME', 'ML & PUBG Shop');
 define('SITE_URL', 'http://localhost');
 
@@ -134,13 +134,13 @@ function ai_auto_reply(string $userMessage, string $orderContext): string {
         ],
     ];
 
-    $ch = curl_init('https://api.anthropic.com/v1/messages');
+    $ch = curl_init('https://api.openai.com/v1/messages');
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Content-Type: application/json',
-        'x-api-key: ' . ANTHROPIC_API_KEY,
+        'x-api-key: ' . OPENAI_API_KEY,
         'anthropic-version: 2023-06-01',
     ]);
     $res = curl_exec($ch);
