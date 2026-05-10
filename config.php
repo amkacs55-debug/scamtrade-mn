@@ -10,7 +10,6 @@ define('OPENAI_API_KEY', 'sk-proj-ONW-y1x7oNEUL09sIQI2VnT5mrQczxwqDSP6SGU2VRntkK
 define('SITE_NAME', 'ML & PUBG Shop');
 define('SITE_URL', 'http://localhost');
 
-session_start();
 
 // ---- Supabase REST API helper ----
 function supabase_request(string $endpoint, string $method = 'GET', array $data = [], bool $useService = false): array {
