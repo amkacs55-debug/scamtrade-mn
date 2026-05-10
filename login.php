@@ -13,7 +13,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
 
     try {
-        $stmt = $conn->prepare("SELECT id, password FROM profiles WHERE username = ? OR email = ?");
         $stmt->execute([$login_input, $login_input]);
         $user = $stmt->fetch();
 
