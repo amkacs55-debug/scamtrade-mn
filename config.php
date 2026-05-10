@@ -1,12 +1,12 @@
 <?php
 // =====================================
-// config.php — Supabase холболт
+// config.php — Supabase & OpenAI холболт
 // =====================================
 
-define('SUPABASE_URL', 'https://YOUR_PROJECT.supabase.co');
-define('SUPABASE_ANON_KEY', 'YOUR_ANON_KEY');
-define('SUPABASE_SERVICE_KEY', 'YOUR_SERVICE_ROLE_KEY'); // admin ops-д
-define('OPENAI_API_KEY', 'YOUR_ANTHROPIC_API_KEY');
+define('SUPABASE_URL', 'https://mmdvytteigecblxuvust.supabase.co');
+define('SUPABASE_ANON_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tZHZ5dHRlaWdlY2JseHV2dXN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MDc4NzIsImV4cCI6MjA5MjA4Mzg3Mn0.OUdv01DC5jRNz2it4EapZ4BH3t-gtmFn4WOlFNBGC4g');
+define('SUPABASE_SERVICE_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tZHZ5dHRlaWdlY2JseHV2dXN0Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjUwNzg3MiwiZXhwIjoyMDkyMDgzODcyfQ.hLHWIGlVv9pt-lkvbM7LYKyxw7AbLos5gCmdGnf3htM'); // admin ops-д
+define('OPENAI_API_KEY', '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'); // Энд sk-proj-... гэсэн түлхүүрээ оруулна
 define('SITE_NAME', 'ML & PUBG Shop');
 define('SITE_URL', 'http://localhost');
 
@@ -115,7 +115,7 @@ function upload_image_to_supabase(array $file): string|false {
     return false;
 }
 
-// ---- Anthropic Claude автомат хариу ----
+// ---- OpenAI ChatGPT автомат хариу ----
 function ai_auto_reply(string $userMessage, string $orderContext): string {
     $systemPrompt = "Та бол Mobile Legends болон PUBG Mobile account дэлгүүрийн автомат туслах. "
         . "Зөвхөн Монгол хэлээр богино, найрсаг хариу өг. "
@@ -125,27 +125,32 @@ function ai_auto_reply(string $userMessage, string $orderContext): string {
 
     $userPrompt = "Захиалгын мэдээлэл: {$orderContext}\n\nХэрэглэгчийн мессеж: {$userMessage}";
 
+    // OpenAI payload бүтэц
     $payload = [
-        'model'      => 'claude-sonnet-4-5',
+        'model'      => 'gpt-4o-mini', // Зардал багатай, хурдан ажиллах модель
         'max_tokens' => 300,
-        'system'     => $systemPrompt,
         'messages'   => [
+            ['role' => 'system', 'content' => $systemPrompt],
             ['role' => 'user', 'content' => $userPrompt]
         ],
     ];
 
-    $ch = curl_init('https://api.openai.com/v1/messages');
+    $ch = curl_init('https://api.openai.com/v1/chat/completions');
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+    
+    // Header хэсгээс Anthropic-ийн зүйлсийг устгаж OpenAI болгосон
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Content-Type: application/json',
-        'x-api-key: ' . OPENAI_API_KEY,
-        'anthropic-version: 2023-06-01',
+        'Authorization: Bearer ' . OPENAI_API_KEY,
     ]);
+    
     $res = curl_exec($ch);
     curl_close($ch);
 
     $data = json_decode($res, true);
-    return $data['content'][0]['text'] ?? 'Таны захиалга хүлээн авлаа. Удахгүй холбогдоно.';
+    
+    // OpenAI хариуг унших бүтэц
+    return $data['choices'][0]['message']['content'] ?? 'Таны захиалга хүлээн авлаа. Удахгүй холбогдоно.';
 }
