@@ -4,7 +4,7 @@ require_once 'config.php';
 
 if (is_logged_in()) { header('Location: index.php'); exit; }
 
-$error = '';
+$error   = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -20,23 +20,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (strlen($password) < 6) {
         $error = 'Нууц үг хамгийн багадаа 6 тэмдэгт байх ёстой.';
     } else {
-        // Check existing email
-        $check = sb_get('users', 'email=eq.' . urlencode($email));
+        // Имэйл давхардал шалгах
+        $check = sb_get('users', 'email=eq.' . urlencode($email) . '&select=id');
         if (!empty($check['data'])) {
             $error = 'Энэ имэйл бүртгэлтэй байна.';
         } else {
-            $hash = password_hash($password, PASSWORD_DEFAULT);
+            $hash = password_hash($password, PASSWORD_BCRYPT); // PASSWORD_BCRYPT илүү тогтвортой
+
             $res = sb_post('users', [
-                'username' => $username,
-                'email' => $email,
+                'username'      => $username,
+                'email'         => $email,
                 'password_hash' => $hash,
-                'role' => 'user'
+                'role'          => 'user',
             ], true);
 
-            if ($res['status'] === 201) {
+            // Supabase 200 эсвэл 201 буцааж болно
+            if (in_array($res['status'], [200, 201]) && !empty($res['data'])) {
                 $success = 'Бүртгэл амжилттай! Нэвтэрнэ үү.';
+            } elseif ($res['status'] === 409) {
+                $error = 'Энэ имэйл эсвэл хэрэглэгчийн нэр аль хэдийн бүртгэлтэй байна.';
             } else {
-                $error = 'Бүртгэхэд алдаа гарлаа. Дахин оролдоно уу.';
+                // Debug: яг ямар алдаа вэ
+                $errDetail = is_array($res['data']) ? ($res['data']['message'] ?? json_encode($res['data'])) : 'Тодорхойгүй алдаа';
+                $error = 'Бүртгэхэд алдаа гарлаа: ' . $errDetail;
             }
         }
     }
