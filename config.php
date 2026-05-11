@@ -1,14 +1,10 @@
 <?php
-// =====================================
-// config.php — Supabase холболт
-// =====================================
-
-define('SUPABASE_URL', 'https://mmdvytteigecblxuvust.supabase.co');
-define('SUPABASE_ANON_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tZHZ5dHRlaWdlY2JseHV2dXN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MDc4NzIsImV4cCI6MjA5MjA4Mzg3Mn0.OUdv01DC5jRNz2it4EapZ4BH3t-gtmFn4WOlFNBGC4g');
-define('SUPABASE_SERVICE_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tZHZ5dHRlaWdlY2JseHV2dXN0Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjUwNzg3MiwiZXhwIjoyMDkyMDgzODcyfQ.hLHWIGlVv9pt-lkvbM7LYKyxw7AbLos5gCmdGnf3htM'); // admin ops-д
-define('OPENAI_API_KEY', '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');
-define('SITE_NAME', 'ML & PUBG Shop');
-define('SITE_URL', 'https://scamtrade-mn.onrender.com');
+$host = 'aws-1-ap-northeast-1.pooler.supabase.com';
+$port = '6543';
+$db   = 'postgres';
+$user = 'postgres.mmdvytteigecblxuvust';
+$pass = 'Hosoo0625201';
+$dsn  = "pgsql:host=$host;port=$port;dbname=$db";
 
 session_start();
 
