@@ -8,26 +8,48 @@ if (is_logged_in()) {
 }
 
 $error = '';
+$debug = ''; // debug горим — ажиллаж эхэлмэгц false болгоно
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email'] ?? '');
+    $email    = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    if ($email && $password) {
-        $res = sb_get('users', 'email=eq.' . urlencode($email) . '&select=*');
+    if (!$email || !$password) {
+        $error = 'Бүх талбарыг бөглөнө үү.';
+    } else {
+        // email-ээр хайх
+        $res   = sb_get('users', 'email=eq.' . urlencode($email) . '&select=*');
         $users = $res['data'] ?? [];
 
-        if (!empty($users) && password_verify($password, $users[0]['password_hash'])) {
-            $user = $users[0];
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['role'] = $user['role'];
-            header('Location: ' . ($user['role'] === 'admin' ? 'dashboard_admin.php' : 'index.php'));
-            exit;
-        } else {
-            $error = 'Имэйл эсвэл нууц үг буруу байна.';
+        // --- debug: асуудал байвал эндээс харна ---
+        if (!empty($_GET['debug'])) {
+            $debug = '<pre style="background:#111;color:#0f0;padding:1rem;border-radius:8px;font-size:0.75rem;overflow:auto;margin-bottom:1rem">'
+                . 'HTTP status: ' . $res['status'] . "\n"
+                . 'Users found: ' . count($users) . "\n"
+                . (isset($users[0]) ? 'Hash stored: ' . substr($users[0]['password_hash'] ?? '', 0, 10) . '...' : 'No user found')
+                . '</pre>';
         }
-    } else {
-        $error = 'Бүх талбарыг бөглөнө үү.';
+        // -----------------------------------------
+
+        if (empty($users)) {
+            $error = 'Имэйл бүртгэлгүй байна.';
+        } else {
+            $user = $users[0];
+            $hash = $user['password_hash'] ?? '';
+
+            // Hash хоосон эсэхийг шалгах
+            if (empty($hash)) {
+                $error = 'Бүртгэлд алдаа байна. Дахин бүртгүүлнэ үү.';
+            } elseif (password_verify($password, $hash)) {
+                $_SESSION['user_id']  = $user['id'];
+                $_SESSION['username'] = $user['username'];
+                $_SESSION['role']     = $user['role'];
+                header('Location: ' . ($user['role'] === 'admin' ? 'dashboard_admin.php' : 'index.php'));
+                exit;
+            } else {
+                $error = 'Нууц үг буруу байна.';
+            }
+        }
     }
 }
 ?>
@@ -62,6 +84,7 @@ input:focus { border-color:var(--accent); }
 <div class="auth-box">
   <h2>Нэвтрэх</h2>
   <p>Таны account руу нэвтэрнэ үү</p>
+  <?php if ($debug): ?><?= $debug ?><?php endif; ?>
   <?php if ($error): ?><div class="error"><?= htmlspecialchars($error) ?></div><?php endif; ?>
   <form method="POST">
     <div class="form-group">
