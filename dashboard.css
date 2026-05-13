@@ -1,6 +1,0 @@
-.dash-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px}
-.kpi{padding:22px;border-radius:18px;background:var(--surface);border:1px solid var(--border);backdrop-filter:blur(10px);position:relative;overflow:hidden}
-.kpi::after{content:"";position:absolute;inset:0;background:radial-gradient(300px 100px at 100% 0%, rgba(34,211,238,.18), transparent 70%);pointer-events:none}
-.kpi .lbl{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:1.4px}
-.kpi .val{font-family:'Orbitron',sans-serif;font-size:32px;margin-top:8px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px;backdrop-filter:blur(10px)}
