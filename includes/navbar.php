@@ -1,4 +1,4 @@
-<?php $u = current_user(); ?>
+<?php require_once __DIR__ . '/db.php'; $u = current_user(); ?>
 <nav class="navbar">
   <div class="nav-inner">
     <a href="index.php" class="logo">
